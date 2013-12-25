@@ -7,13 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#ifdef COCOAPODS
-#import <FMDB/FMDatabase.h>
-#import <FMDB/FMDatabaseQueue.h>
-#else
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
-#endif
 
 // These notifications use the relevant model's Class as the "object" for convenience so observers can,
 //  for instance, observe every update to any instance of the Person class:
