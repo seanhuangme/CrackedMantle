@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FCModel.h"
 
 // An abstract base class for model objects, using reflection to provide
 // sensible default behaviors.
 //
 // The default implementations of <NSCopying>, -hash, and -isEqual: make use of
 // the +propertyKeys method.
-@interface MTLModel : NSObject <NSCopying>
+@interface MTLModel : FCModel <NSCopying>
 
 // Returns a new instance of the receiver initialized using
 // -initWithDictionary:error:.
