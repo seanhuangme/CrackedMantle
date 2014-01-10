@@ -6,11 +6,11 @@
 //
 
 #import <objc/runtime.h>
+#import <sqlite3.h>
 #import <string.h>
 #import "FCModel.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
-#import <sqlite3.h>
 
 NSString * const FCModelInsertNotification = @"FCModelInsertNotification";
 NSString * const FCModelUpdateNotification = @"FCModelUpdateNotification";

@@ -5,8 +5,6 @@
 //  Copyright (c) 2013 Marco Arment. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
 
