@@ -15,6 +15,14 @@ typedef NS_ENUM(NSInteger, FCModelSaveResult) {
     FCModelSaveNoChanges
 };
 
+typedef NS_ENUM(NSInteger, FCFieldType) {
+	FCFieldTypeOther = 0,
+	FCFieldTypeText,
+	FCFieldTypeInteger,
+	FCFieldTypeDouble,
+	FCFieldTypeBool
+};
+
 /** 
  * These notifications use the relevant model’s Class as the “object” for convenience so observers can,
  * for instance, observe every update to any instance of the Person class:
@@ -26,37 +34,13 @@ typedef NS_ENUM(NSInteger, FCModelSaveResult) {
 extern NSString *const FCModelInsertNotification;
 extern NSString *const FCModelUpdateNotification;
 extern NSString *const FCModelDeleteNotification;
+extern NSString *const FCModelReloadNotification;
 extern NSString *const FCModelInstanceKey;
+extern NSString *const FCModelSaveNotification;
+extern NSString *const FCModelInstanceKey;
+extern NSString *const FCModelClassKey;
 
 @interface FCModel : NSObject
-
-@property (readonly) id primaryKey;
-@property (readonly) NSDictionary *allFields;
-@property (readonly) BOOL hasUnsavedChanges;
-@property (readonly) BOOL existsInDatabase;
-@property (readonly) NSError *lastSQLiteError;
-
-+ (void)openDatabaseAtPath:(NSString *)path withSchemaBuilder:(void (^)(FMDatabase *db, int *schemaVersion))schemaBuilder;
-+ (void)openDatabaseAtPath:(NSString *)path withDatabaseInitializer:(void (^)(FMDatabase *db))databaseInitializer schemaBuilder:(void (^)(FMDatabase *db, int *schemaVersion))schemaBuilder;
-
-// Feel free to operate on the same database queue with your own queries (IMPORTANT: READ THE NEXT METHOD DEFINITION)
-+ (FMDatabaseQueue *)databaseQueue;
-
-/**
- * Call if you perform INSERT/UPDATE/DELETE outside of the `instance*` or `save` methods.
- * This will cause any instances in existence to reload their data from the database.
- *
- * - Call on a subclass to reload all instances of that model and any subclasses.
- * - Call on FCModel to reload all instances of ALL models.
- */
-+ (void)dataWasUpdatedExternally;
-
-/** 
- * Or use this convenience method, which calls dataWasUpdatedExternally automatically and offers $T/$PK parsing.
- * If you don’t know which tables will be affected, or if it will affect more than one, call on FCModel, not a subclass.
- * Only call on a subclass if only that model’s table will be affected.
- */
-+ (NSError *)executeUpdateQuery:(NSString *)query, ...;
 
 // CRUD basics
 + (instancetype)instanceWithPrimaryKey:(id)primaryKeyValue; // will create if nonexistent
@@ -67,40 +51,7 @@ extern NSString *const FCModelInstanceKey;
 - (FCModelSaveResult)save;
 + (void)saveAll; // Resolved by class: call on FCModel to save all, on a subclass to save just those and their subclasses, etc.
 
-/**
- * SELECTs
- * - `keyed` variants return dictionaries keyed by each instance’s primary-key value.
- * - `FromResultSet` variants will iterate through the supplied result set, but the caller is still responsible for closing it.
- * - Optional query placeholders:
- *      $T  - This model’s table name
- *      $PK - This model’s primary-key field name
- */
-+ (NSArray *)allInstances;
-+ (NSDictionary *)keyedAllInstances;
-
-+ (NSArray *)instancesFromResultSet:(FMResultSet *)rs;
-+ (NSDictionary *)keyedInstancesFromResultSet:(FMResultSet *)rs;
-+ (instancetype)firstInstanceFromResultSet:(FMResultSet *)rs;
-
-+ (instancetype)firstInstanceWhere:(NSString *)queryAfterWHERE, ...;
-+ (NSArray *)instancesWhere:(NSString *)queryAfterWHERE, ...;
-+ (NSDictionary *)keyedInstancesWhere:(NSString *)queryAfterWHERE, ...;
-
-+ (instancetype)firstInstanceOrderedBy:(NSString *)queryAfterORDERBY, ...;
-+ (NSArray *)instancesOrderedBy:(NSString *)queryAfterORDERBY, ...;
-
-// Fetch a set of primary keys, i.e. `WHERE key IN (...)`
-+ (NSArray *)instancesWithPrimaryKeyValues:(NSArray *)primaryKeyValues;
-+ (NSDictionary *)keyedInstancesWithPrimaryKeyValues:(NSArray *)primaryKeyValues;
-
-// Return data instead of completed objects (convenient accessors to FCModel’s database queue with $T/$PK parsing)
-+ (NSArray *)resultDictionariesFromQuery:(NSString *)query, ...;
-+ (NSArray *)firstColumnArrayFromQuery:(NSString *)query, ...;
-+ (id)firstValueFromQuery:(NSString *)query, ...;
-
-
 // For subclasses to override, all optional:
-
 - (BOOL)shouldInsert;
 - (BOOL)shouldUpdate;
 - (BOOL)shouldDelete;
@@ -135,4 +86,23 @@ extern NSString *const FCModelInstanceKey;
  */
 - (id)valueOfFieldName:(NSString *)fieldName byResolvingReloadConflictWithDatabaseValue:(id)valueInDatabase;
 
+@property (readonly) id primaryKey;
+@property (readonly) NSDictionary *allFields;
+@property (readonly) BOOL hasUnsavedChanges;
+@property (readonly) BOOL existsInDatabase;
+@property (readonly) NSError *lastSQLiteError;
+
 @end
+
+/**
+ * Used for NULL/NOT NULL rules and default values
+ */
+
+@interface FCModelFieldInfo : NSObject
+
+@property (nonatomic, assign) BOOL nullAllowed;
+@property (nonatomic, assign) FCFieldType type;
+@property (nonatomic) id defaultValue;
+
+@end
+
