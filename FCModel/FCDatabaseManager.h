@@ -8,7 +8,7 @@
 
 @class FMDatabaseQueue;
 
-@interface FCModelDatabaseManager : NSObject
+@interface FCDatabaseManager : NSObject
 
 + (void)openDatabaseAtPath:(NSString *)path withSchemaBuilder:(void (^)(FMDatabase *db, int *schemaVersion))schemaBuilder;
 + (void)openDatabaseAtPath:(NSString *)path withDatabaseInitializer:(void (^)(FMDatabase *db))databaseInitializer schemaBuilder:(void (^)(FMDatabase *db, int *schemaVersion))schemaBuilder;

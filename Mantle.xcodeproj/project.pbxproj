@@ -25,8 +25,8 @@
 		458DE0A5186B655600859047 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE09D186B655600859047 /* FMResultSet.m */; };
 		45BDF8D018822B5E005E8A7E /* FCModel+Query.h in Headers */ = {isa = PBXBuildFile; fileRef = 45BDF8CE18822B5E005E8A7E /* FCModel+Query.h */; };
 		45BDF8D118822B5E005E8A7E /* FCModel+Query.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BDF8CF18822B5E005E8A7E /* FCModel+Query.m */; };
-		45BDF8D818822B7E005E8A7E /* FCModelDatabaseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 45BDF8D618822B7E005E8A7E /* FCModelDatabaseManager.h */; };
-		45BDF8D918822B7E005E8A7E /* FCModelDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BDF8D718822B7E005E8A7E /* FCModelDatabaseManager.m */; };
+		45BDF8D818822B7E005E8A7E /* FCDatabaseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 45BDF8D618822B7E005E8A7E /* FCDatabaseManager.h */; };
+		45BDF8D918822B7E005E8A7E /* FCDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BDF8D718822B7E005E8A7E /* FCDatabaseManager.m */; };
 		45BDF8DC188236C2005E8A7E /* FMDatabase+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 45BDF8DA188236C2005E8A7E /* FMDatabase+Private.h */; };
 		45BDF8E018823992005E8A7E /* FCModel+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 45BDF8DE18823992005E8A7E /* FCModel+Private.h */; };
 		542921C817D750EB00AE432B /* MTLCoreDataObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 542921C717D750EB00AE432B /* MTLCoreDataObjects.m */; };
@@ -268,8 +268,8 @@
 		458DE09D186B655600859047 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMResultSet.m; path = FMDB/FMResultSet.m; sourceTree = "<group>"; };
 		45BDF8CE18822B5E005E8A7E /* FCModel+Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FCModel+Query.h"; path = "FCModel/FCModel+Query.h"; sourceTree = "<group>"; };
 		45BDF8CF18822B5E005E8A7E /* FCModel+Query.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "FCModel+Query.m"; path = "FCModel/FCModel+Query.m"; sourceTree = "<group>"; };
-		45BDF8D618822B7E005E8A7E /* FCModelDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FCModelDatabaseManager.h; path = FCModel/FCModelDatabaseManager.h; sourceTree = "<group>"; };
-		45BDF8D718822B7E005E8A7E /* FCModelDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FCModelDatabaseManager.m; path = FCModel/FCModelDatabaseManager.m; sourceTree = "<group>"; };
+		45BDF8D618822B7E005E8A7E /* FCDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FCDatabaseManager.h; path = FCModel/FCDatabaseManager.h; sourceTree = "<group>"; };
+		45BDF8D718822B7E005E8A7E /* FCDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FCDatabaseManager.m; path = FCModel/FCDatabaseManager.m; sourceTree = "<group>"; };
 		45BDF8DA188236C2005E8A7E /* FMDatabase+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FMDatabase+Private.h"; path = "FMDB/FMDatabase+Private.h"; sourceTree = "<group>"; };
 		45BDF8DE18823992005E8A7E /* FCModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FCModel+Private.h"; path = "FCModel/FCModel+Private.h"; sourceTree = "<group>"; };
 		542921C617D750EB00AE432B /* MTLCoreDataObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLCoreDataObjects.h; sourceTree = "<group>"; };
@@ -417,13 +417,13 @@
 		458DE070186B62AE00859047 /* FCModel */ = {
 			isa = PBXGroup;
 			children = (
+				45BDF8D618822B7E005E8A7E /* FCDatabaseManager.h */,
+				45BDF8D718822B7E005E8A7E /* FCDatabaseManager.m */,
 				458DE092186B654D00859047 /* FCModel.h */,
 				458DE093186B654D00859047 /* FCModel.m */,
 				45BDF8DE18823992005E8A7E /* FCModel+Private.h */,
 				45BDF8CE18822B5E005E8A7E /* FCModel+Query.h */,
 				45BDF8CF18822B5E005E8A7E /* FCModel+Query.m */,
-				45BDF8D618822B7E005E8A7E /* FCModelDatabaseManager.h */,
-				45BDF8D718822B7E005E8A7E /* FCModelDatabaseManager.m */,
 			);
 			name = FCModel;
 			sourceTree = "<group>";
@@ -735,7 +735,7 @@
 				458DE09E186B655600859047 /* FMDatabase.h in Headers */,
 				D0F117491614C5600092520B /* NSValueTransformer+MTLPredefinedTransformerAdditions.h in Headers */,
 				458DE094186B654D00859047 /* FCModel.h in Headers */,
-				45BDF8D818822B7E005E8A7E /* FCModelDatabaseManager.h in Headers */,
+				45BDF8D818822B7E005E8A7E /* FCDatabaseManager.h in Headers */,
 				45BDF8E018823992005E8A7E /* FCModel+Private.h in Headers */,
 				1ED5B5D0163A4E3C0072668E /* NSObject+MTLComparisonAdditions.h in Headers */,
 				D01BD09D16CB432D00EC95C7 /* MTLJSONAdapter.h in Headers */,
@@ -1026,7 +1026,7 @@
 				D0BFC37117476B4700F5DC5D /* NSValueTransformer+MTLInversionAdditions.m in Sources */,
 				D094E47B1777617500906BF7 /* EXTRuntimeExtensions.m in Sources */,
 				D094E47D1777617800906BF7 /* EXTScope.m in Sources */,
-				45BDF8D918822B7E005E8A7E /* FCModelDatabaseManager.m in Sources */,
+				45BDF8D918822B7E005E8A7E /* FCDatabaseManager.m in Sources */,
 				458DE09F186B655600859047 /* FMDatabase.m in Sources */,
 				458DE0A1186B655600859047 /* FMDatabasePool.m in Sources */,
 				458DE0A3186B655600859047 /* FMDatabaseQueue.m in Sources */,

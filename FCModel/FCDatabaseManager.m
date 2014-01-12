@@ -12,13 +12,13 @@
 #import "FMDatabase.h"
 #import "FMDatabase+Private.h"
 #import "FMDatabaseQueue.h"
-#import "FCModelDatabaseManager.h"
+#import "FCDatabaseManager.h"
 
 static FMDatabaseQueue *databaseQueue;
 static NSDictionary *fieldInfo;
 static NSDictionary *primaryKeyFieldName;
 
-@implementation FCModelDatabaseManager
+@implementation FCDatabaseManager
 
 + (void)openDatabaseAtPath:(NSString *)path withSchemaBuilder:(void (^)(FMDatabase *db, int *schemaVersion))schemaBuilder
 {

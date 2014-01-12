@@ -9,7 +9,7 @@
 #import "FCModel.h"
 #import "FCModel+Private.h"
 #import "FCModel+Query.h"
-#import "FCModelDatabaseManager.h"
+#import "FCDatabaseManager.h"
 #import "FMDatabase+Private.h"
 
 @implementation FCModel (Query)
@@ -22,7 +22,7 @@
 
 	__block BOOL success = NO;
 	__block NSError *error = nil;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		success = [db executeUpdate:[self expandQuery:query] error:nil withArgumentsInArray:nil orDictionary:nil orVAList:*foolTheStaticAnalyzer];
 		if (!success) {
 			error = [db.lastError copy];
@@ -31,7 +31,7 @@
 
 	va_end(args);
 	if (success) {
-		[FCModelDatabaseManager dataWasUpdatedExternally];
+		[FCDatabaseManager dataWasUpdatedExternally];
 	}
 	return error;
 }
@@ -49,7 +49,7 @@
 
 	void (^processResult)(FMResultSet *, BOOL *) = ^(FMResultSet *s, BOOL *stop){
 		NSDictionary *rowDictionary = s.resultDictionary;
-		NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+		NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 		instance = [self instanceWithPrimaryKey:rowDictionary[primaryKeyFieldName[self]] databaseRowValues:rowDictionary createIfNonexistent:NO];
 		if (onlyFirst) {
 			*stop = YES;
@@ -68,7 +68,7 @@
 			processResult(existingResultSet, &stop);
 		}
 	} else {
-		[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+		[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 			NSString *queryString = query ? [self expandQuery:[@"SELECT * FROM \"$T\" WHERE " stringByAppendingString:query]]: [self expandQuery:@"SELECT * FROM \"$T\""];
 			FMResultSet *s = [db executeQuery:queryString withArgumentsInArray:argsArray orDictionary:nil orVAList:args];
 			if (!s) {
@@ -163,13 +163,13 @@
 	}
 
 	__block NSUInteger maxParameterCount = 0;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		maxParameterCount = sqlite3_limit(db.sqliteHandle, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
 	}];
 
 	__block NSArray *allFoundInstances = nil;
 	NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:MIN([primaryKeyValues count], maxParameterCount)];
-	NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+	NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 	NSMutableString *whereClause = [NSMutableString stringWithFormat:@"%@ IN (", primaryKeyFieldName[self]];
 
 	void (^fetchChunk)() = ^{
@@ -213,7 +213,7 @@
 	va_list args;
 	va_list *foolTheStaticAnalyzer = &args;
 	va_start(args, query);
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		FMResultSet *s = [db executeQuery:[self expandQuery:query] withArgumentsInArray:nil orDictionary:nil orVAList:*foolTheStaticAnalyzer];
 		if (!s) {
 			[self queryFailedInDatabase:db];
@@ -233,7 +233,7 @@
 	va_list args;
 	va_list *foolTheStaticAnalyzer = &args;
 	va_start(args, query);
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		FMResultSet *s = [db executeQuery:[self expandQuery:query] withArgumentsInArray:nil orDictionary:nil orVAList:*foolTheStaticAnalyzer];
 		if (!s) {
 			[self queryFailedInDatabase:db];
@@ -253,7 +253,7 @@
 	va_list args;
 	va_list *foolTheStaticAnalyzer = &args;
 	va_start(args, query);
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		FMResultSet *s = [db executeQuery:[self expandQuery:query] withArgumentsInArray:nil orDictionary:nil orVAList:*foolTheStaticAnalyzer];
 		if (!s) {
 			[self queryFailedInDatabase:db];

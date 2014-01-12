@@ -9,7 +9,7 @@
 #import <sqlite3.h>
 #import <string.h>
 #import "FCModel.h"
-#import "FCModelDatabaseManager.h"
+#import "FCDatabaseManager.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
 
@@ -81,7 +81,7 @@ static dispatch_semaphore_t instancesReadLock;
 		instance = fieldValues ? [[self alloc] initWithFieldValues:fieldValues existsInDatabaseAlready:YES] : [self _instanceFromDatabaseWithPrimaryKey:primaryKeyValue];
 		if (!instance && create) {
 			// Create new with this key.
-			NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+			NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 			instance = [[self alloc] initWithFieldValues:@{primaryKeyFieldName[self]: primaryKeyValue} existsInDatabaseAlready:NO];
 		}
 
@@ -111,7 +111,7 @@ static dispatch_semaphore_t instancesReadLock;
 		return query;
 	}
 
-	NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+	NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 	query = [query stringByReplacingOccurrencesOfString:@"$PK" withString:primaryKeyFieldName[self]];
 	return [query stringByReplacingOccurrencesOfString:@"$T" withString:NSStringFromClass(self)];
 }
@@ -137,7 +137,7 @@ static dispatch_semaphore_t instancesReadLock;
 		self.primaryKeyLocked = NO;
 		self.primaryKeySet = self.existsInDatabase;
 
-		NSDictionary *fieldInfo = [FCModelDatabaseManager fieldInfo];
+		NSDictionary *fieldInfo = [FCDatabaseManager fieldInfo];
 		[fieldInfo[self.class] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			FCModelFieldInfo *info = (FCModelFieldInfo *)obj;
 			if (info.defaultValue) [self setValue:info.defaultValue forKey:key];
@@ -207,7 +207,7 @@ static dispatch_semaphore_t instancesReadLock;
 	NSMutableArray *values;
 
 	NSString *tableName = NSStringFromClass(self.class);
-	NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+	NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 	NSString *pkName = primaryKeyFieldName[self.class];
 	id primaryKey = self.isPrimaryKeySet ? [self _encodedValueForFieldName:pkName]: nil;
 	if (!primaryKey) {
@@ -255,7 +255,7 @@ static dispatch_semaphore_t instancesReadLock;
 	}
 
 	__block BOOL success = NO;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		NSString *query = [self.class expandQuery:@"DELETE FROM \"$T\" WHERE \"$PK\" = ?"];
 		success = [db executeUpdate:query, [self primaryKey]];
 		self.lastSQLiteError = success ? nil: db.lastError;
@@ -360,14 +360,14 @@ static dispatch_semaphore_t instancesReadLock;
 
 - (id)primaryKey
 {
-	NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+	NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 	return [self valueForKey:primaryKeyFieldName[self.class]];
 }
 
 - (NSDictionary *)allFields
 {
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-	NSDictionary *fieldInfo = [FCModelDatabaseManager fieldInfo];
+	NSDictionary *fieldInfo = [FCDatabaseManager fieldInfo];
 	[[fieldInfo[self] allKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		id value = [self valueForKey:obj];
 		if (value) [dictionary setObject:value forKey:obj];
@@ -423,7 +423,7 @@ static dispatch_semaphore_t instancesReadLock;
 + (instancetype)_instanceFromDatabaseWithPrimaryKey:(id)key
 {
 	__block FCModel *model;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		FMResultSet *s = [db executeQuery:[self expandQuery:@"SELECT * FROM \"$T\" WHERE \"$PK\"=?"], key];
 		if (!s) {
 			[self queryFailedInDatabase:db];
@@ -479,7 +479,7 @@ static dispatch_semaphore_t instancesReadLock;
 	}
 
 	__block NSDictionary *resultDictionary = nil;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		FMResultSet *s = [db executeQuery:[self.class expandQuery:@"SELECT * FROM \"$T\" WHERE \"$PK\"=?"], self.primaryKey];
 		if (!s) {
 			[self.class queryFailedInDatabase:db];
@@ -506,7 +506,7 @@ static dispatch_semaphore_t instancesReadLock;
 	} else {
 		__block BOOL didUpdate = NO;
 		[resultDictionary enumerateKeysAndObjectsUsingBlock:^(NSString *fieldName, id fieldValue, BOOL *stop) {
-			NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+			NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 			if ([fieldName isEqualToString:primaryKeyFieldName[self.class]]) {
 				return;
 			}
@@ -542,7 +542,7 @@ static dispatch_semaphore_t instancesReadLock;
 {
 	__block BOOL success = NO;
 	__block sqlite_int64 lastInsertID;
-	[[FCModelDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
+	[[FCDatabaseManager databaseQueue] inDatabase:^(FMDatabase *db) {
 		success = [db executeUpdate:query withArgumentsInArray:values];
 		if (success) {
 			lastInsertID = [db lastInsertRowId];
@@ -558,7 +558,7 @@ static dispatch_semaphore_t instancesReadLock;
 	}
 
 	if (!primaryKey || primaryKey == [NSNull null]) {
-		NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+		NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 		[self setValue:[NSNumber numberWithUnsignedLongLong:lastInsertID] forKey:primaryKeyFieldName[self.class]];
 		[self _registerUniqueInstance];
 	}
@@ -611,7 +611,7 @@ static dispatch_semaphore_t instancesReadLock;
 - (NSDictionary *)_validateNotNULLColumnsForTableName:(NSString *)tableName
 {
 	// Validate NOT NULL columns
-	NSDictionary *fieldInfo = [FCModelDatabaseManager fieldInfo];
+	NSDictionary *fieldInfo = [FCDatabaseManager fieldInfo];
 	[fieldInfo[self.class] enumerateKeysAndObjectsUsingBlock:^(id key, FCModelFieldInfo *info, BOOL *stop) {
 		if (info.nullAllowed) return;
 
@@ -635,7 +635,7 @@ static dispatch_semaphore_t instancesReadLock;
 	[NSNotificationCenter.defaultCenter removeObserver:self name:FCModelReloadNotification object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:FCModelSaveNotification object:nil];
 
-	NSDictionary *fieldInfo = [FCModelDatabaseManager fieldInfo];
+	NSDictionary *fieldInfo = [FCDatabaseManager fieldInfo];
 	[fieldInfo[self.class] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		[self removeObserver:self forKeyPath:key];
 	}];
@@ -653,7 +653,7 @@ static dispatch_semaphore_t instancesReadLock;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	NSDictionary *primaryKeyFieldName = [FCModelDatabaseManager primaryKeyFieldName];
+	NSDictionary *primaryKeyFieldName = [FCDatabaseManager primaryKeyFieldName];
 	if ([keyPath isEqualToString:primaryKeyFieldName[self.class]]) {
 		self.primaryKeySet = YES;
 	}
