@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D042FC3B15F72B23004E8054"
-               BuildableName = "Mantle.framework"
-               BlueprintName = "Mantle"
+               BuildableName = "CrackedMantle.framework"
+               BlueprintName = "CrackedMantle"
                ReferencedContainer = "container:Mantle.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
