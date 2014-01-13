@@ -57,7 +57,7 @@ static NSDictionary *primaryKeyFieldName;
 		while ([tablesRS next]) {
 			NSString *tableName = [tablesRS stringForColumnIndex:0];
 			Class tableModelClass = NSClassFromString(tableName);
-			if (!tableModelClass || ![tableModelClass isSubclassOfClass:self]) continue;
+			if (!tableModelClass || ![tableModelClass isSubclassOfClass:[FCModel class]]) continue;
 
 			NSString *primaryKeyName = nil;
 			BOOL isMultiColumnPrimaryKey = NO;
