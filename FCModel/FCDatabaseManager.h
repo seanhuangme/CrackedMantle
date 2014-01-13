@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 GitHub. All rights reserved.
 //
 
+@class FMDatabase;
 @class FMDatabaseQueue;
 
 @interface FCDatabaseManager : NSObject
