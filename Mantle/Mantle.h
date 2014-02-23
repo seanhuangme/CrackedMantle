@@ -7,13 +7,13 @@
 //
 
 
-#import <CrackedMantle/MTLJSONAdapter.h>
-#import <CrackedMantle/MTLManagedObjectAdapter.h>
-#import <CrackedMantle/MTLModel.h>
-#import <CrackedMantle/MTLModel+NSCoding.h>
-#import <CrackedMantle/MTLValueTransformer.h>
-#import <CrackedMantle/NSArray+MTLManipulationAdditions.h>
-#import <CrackedMantle/NSDictionary+MTLManipulationAdditions.h>
-#import <CrackedMantle/NSObject+MTLComparisonAdditions.h>
-#import <CrackedMantle/NSValueTransformer+MTLInversionAdditions.h>
-#import <CrackedMantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>
+#import <Mantle/MTLJSONAdapter.h>
+#import <Mantle/MTLManagedObjectAdapter.h>
+#import <Mantle/MTLModel.h>
+#import <Mantle/MTLModel+NSCoding.h>
+#import <Mantle/MTLValueTransformer.h>
+#import <Mantle/NSArray+MTLManipulationAdditions.h>
+#import <Mantle/NSDictionary+MTLManipulationAdditions.h>
+#import <Mantle/NSObject+MTLComparisonAdditions.h>
+#import <Mantle/NSValueTransformer+MTLInversionAdditions.h>
+#import <Mantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>
